@@ -1,0 +1,124 @@
+
+VBA Script for Multiple_Year_Stock
+=============================================
+=============================================
+
+Sub Multiple_Year_Stock_Data():
+
+    'set worksheet as a variable
+    Dim ws As Worksheet
+
+    'loop through each worksheet in the workbook and create summary table for each year
+    For Each ws In Worksheets
+    
+    'summary table on each worksheet
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Stock Volume"
+    
+    'set Ticker as variable
+        Dim ticker As String
+    
+    'set Total Volume as variable
+        Dim total_volume As Double
+        total_volume = 0
+    
+    'include each ticker in summary table
+        Dim rowcount As Long
+        rowcount = 2
+    
+    'set variable at each year open value
+        Dim open_value As Double
+        open_value = 0
+    
+    'set variable at each year end value
+        Dim close_value As Double
+        close_value = 0
+    
+    'set variable for price change for year
+        Dim year_change As Double
+        year_change = 0
+    
+    'set variable for percent change for year
+        Dim percent_change As Double
+        percent_change = 0
+    
+       
+    'set variable to loop through all rows
+        Dim lastRow As Long
+        lastRow = ws.Cells(Rows.Count, "A").End(xlUp).Row
+    
+    
+     'loop through each ticker
+        For i = 2 To lastRow
+    
+        
+    'add conditional for year open value
+        If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
+    
+            open_value = ws.Cells(2, 3).Value
+                
+      
+    'calculate total volume for each ticker
+        total_volume = total_volume + ws.Cells(i, 7)
+        
+        
+    'pull new ticker to table
+            ws.Cells(rowcount, 9).Value = ws.Cells(i, 1).Value
+    
+    'pull total volume to table
+            ws.Cells(rowcount, 12).Value = total_volume
+            
+    'get year close value
+            close_value = ws.Cells(i, 6).Value
+    
+    'calculate annual price change and add to summary table
+            year_change = close_value - open_value
+            ws.Cells(rowcount, 10).Value = year_change
+        
+    
+    'add formatting to color code plus or minus
+        If year_change >= 0 Then
+            ws.Cells(rowcount, 10).Interior.ColorIndex = 4
+        Else
+            ws.Cells(rowcount, 10).Interior.ColorIndex = 3
+        End If
+    
+    'calculate annual percent_change and add to summary table
+        If open_value = 0 And close_value = 0 Then
+            percent_change = 0
+            ws.Cells(rowcount, 11).Value = percent_change
+            ws.Cells(rowcount, 11).NumberFormat = "0.00%"
+    
+        ElseIf open_value = 0 Then
+            Dim percent_change_na As String
+            percent_change_na = "New Stock"
+            ws.Cells(rowcount, 11).Value = percent_change
+            ws.Cells(rowcount, 11).NumberFormat = "0.00%"
+            
+            Else
+            percent_change = year_change / open_value
+            ws.Cells(rowcount, 11).Value = percent_change
+            ws.Cells(rowcount, 11).NumberFormat = "0.00%"
+        End If
+    
+    'move to next empty row in table
+            rowcount = rowcount + 1
+            total_volume = 0
+            open_value = 0
+            close_value = 0
+            year_change = 0
+            percent_change = 0
+    
+        End If
+        
+                   
+    Next i
+    
+    Next ws
+    
+
+End Sub
+
+
